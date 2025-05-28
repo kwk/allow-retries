@@ -1,3 +1,3 @@
 .PHONY: all
 all:
-	lit --debug -Dtest_retry_attempts=20 -vv allow-retries.py
+	lit allow-retries.py -Dcurrent_second=$(shell date +%s) -Dtest_retry_attempts=20 -vv --debug
