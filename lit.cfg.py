@@ -23,11 +23,5 @@ config.test_exec_root = os.path.dirname(__file__)
 
 config.allowed_retries = 15
 
-# config.name = "allow-retries"
-# config.suffixes = [".py"]
-config.test_format = lit.formats.ShTest(execute_external=False)
-config.test_source_root = None
-config.test_exec_root = None
-
 config.substitutions.append(("%{current_second}", lit_config.params.get("current_second", "")))
 

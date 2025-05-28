@@ -8,15 +8,15 @@ flaky tests.
 When building LLVM and running its test we sometime experience flaky tests the
 work the second time you run them.
 
-To reproduce this flakyness I've created a test called `allow-retries.py`.
+To reproduce this flakyness I've created a test called `multiple-of-7.py`.
 
-The `allow-retries.py` test file will only succeed (exit with `0`)
+The `multiple-of-7.py` test file will only succeed (exit with `0`)
 when the current second is a multiple of `7`.
 
 When it succeeds it prints: `Current second IS a multiple of 7`.
 When it fails it prints: `Current second is NOT a multiple of 7`
 
-The LLVM codebase also has an
+The LLVM codebase has an
 [`allow-retries.py`](https://github.com/llvm/llvm-project/blob/main/llvm/utils/lit/tests/allow-retries.py)
 test file from which I borrowed ideas on how to instruct `lit` to retry the test execution.
 
