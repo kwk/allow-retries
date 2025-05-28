@@ -1,6 +1,7 @@
 # README
 
-I try to find out how we can run LLVM `lit` tests and configure them.
+I try to find out how we can run LLVM `lit` tests and configure them to allow
+flaky tests.
 
 ## Artificial flakiness
 
@@ -29,65 +30,53 @@ None of the above trigger a re-run of the test.
 
 ```console
 $ make
-lit allow-retries.py -Dcurrent_second=1748445674 -Dtest_retry_attempts=20 -vv --debug
+lit multiple-of-7.py -Dcurrent_second=1748446771 -Dtest_retry_attempts=20 -vv --debug
 lit: /usr/lib/python3.13/site-packages/lit/discovery.py:66: note: loading suite config '/home/fedora/src/allow-retries/lit.cfg.py'
 lit: /usr/lib/python3.13/site-packages/lit/TestingConfig.py:142: note: ... loaded config '/home/fedora/src/allow-retries/lit.cfg.py'
-lit: /usr/lib/python3.13/site-packages/lit/discovery.py:141: note: resolved input 'allow-retries.py' to 'allow-retries'::('allow-retries.py',)
+lit: /usr/lib/python3.13/site-packages/lit/discovery.py:141: note: resolved input 'multiple-of-7.py' to 'allow-retries'::('multiple-of-7.py',)
 -- Testing: 1 tests, 1 workers --
-FAIL: allow-retries :: allow-retries.py (1 of 1)
-******************** TEST 'allow-retries :: allow-retries.py' FAILED ********************
+FAIL: allow-retries :: multiple-of-7.py (1 of 1)
+******************** TEST 'allow-retries :: multiple-of-7.py' FAILED ********************
 Exit Code: 1
 
 Command Output (stdout):
 --
 # RUN: at line 3
-/usr/bin/python3 "/home/fedora/src/allow-retries/allow-retries.py" "1748445674" | FileCheck --color --dump-input=always "/home/fedora/src/allow-retries/allow-retries.py"
-# executed command: /usr/bin/python3 /home/fedora/src/allow-retries/allow-retries.py 1748445674
+/usr/bin/python3 "/home/fedora/src/allow-retries/multiple-of-7.py" "1748446771" | FileCheck --color --dump-input=always "/home/fedora/src/allow-retries/multiple-of-7.py"
+# executed command: /usr/bin/python3 /home/fedora/src/allow-retries/multiple-of-7.py 1748446771
 # note: command had no output on stdout or stderr
 # error: command failed with exit status: 1
-# executed command: FileCheck --color --dump-input=always /home/fedora/src/allow-retries/allow-retries.py
+# executed command: FileCheck --color --dump-input=always /home/fedora/src/allow-retries/multiple-of-7.py
 # .---command stderr------------
-# | /home/fedora/src/allow-retries/allow-retries.py:16:11: error: CHECK: expected string not found in input
-# |  # CHECK: Current second IS a multiple of 7
-# |           ^
-# | <stdin>:1:13: note: scanning from here
-# | Running test
-# |             ^
-# | <stdin>:2:1: note: possible intended match here
-# | Current second is NOT a multiple of 7: 1748445674
-# | ^
 # | 
 # | Input file: <stdin>
-# | Check file: /home/fedora/src/allow-retries/allow-retries.py
+# | Check file: /home/fedora/src/allow-retries/multiple-of-7.py
 # | 
 # | -dump-input=help explains the following input dump.
 # | 
 # | Input was:
 # | <<<<<<
-# |             1: Running test 
-# | check:16'0                 X error: no match found
-# |             2: Current second is NOT a multiple of 7: 1748445674 
-# | check:16'0     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# | check:16'1     ?                                                  possible intended match
+# |    1: Running test 
+# |    2: Current second is NOT a multiple of 7: 1748446771 
 # | >>>>>>
 # `-----------------------------
-# error: command failed with exit status: 1
 
 --
 
 ********************
 ********************
 Failed Tests (1):
-  allow-retries :: allow-retries.py
+  allow-retries :: multiple-of-7.py
 
 
-Testing Time: 0.20s
+Testing Time: 0.22s
 
 Total Discovered Tests: 1
   Failed: 1 (100.00%)
 make: *** [Makefile:3: all] Error 1
 ```
 
+As you can see, lit only ran the test once and NOT multiple times.
 
 ## Lit version in use
 
