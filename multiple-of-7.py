@@ -1,11 +1,12 @@
 # ALLOW_RETRIES: 3000
 
-# RUN: /usr/bin/python3 "%s" "%{current_second}" | FileCheck --color --dump-input=always "%s"
+# RUN: /usr/bin/python3 "%s" | FileCheck --color --dump-input=always "%s"
 
 import sys
 from datetime import datetime
+import time
 
-current_second = int(sys.argv[1])
+current_second = int(time.time())
 
 print("Running test")
 # CHECK: Running test
