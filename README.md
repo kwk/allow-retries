@@ -1,6 +1,6 @@
 # README
 
-I try to find out how we can run LLVM `lit` tests and configure them to allow
+I try to find out how we can run LLVM `lit` tests and configure them to rerun
 flaky tests.
 
 ## Artificial flakiness
