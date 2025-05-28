@@ -1,3 +1,3 @@
 .PHONY: all
 all:
-	lit multiple-of-7.py -vv --debug -Dmaximum_retries_per_test=4000
+	LIT_OPTS="-Dmaximum_retries_per_test=4000" lit multiple-of-7.py -vv --debug
