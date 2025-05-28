@@ -16,83 +16,34 @@ when the current second is a multiple of `7`.
 When it succeeds it prints: `Current second IS a multiple of 7`.
 When it fails it prints: `Current second is NOT a multiple of 7`
 
-The LLVM codebase has an
-[`allow-retries.py`](https://github.com/llvm/llvm-project/blob/main/llvm/utils/lit/tests/allow-retries.py)
-test file from which I borrowed ideas on how to instruct `lit` to retry the test execution.
+## Usage
 
-1. `# ALLOW_RETRIES: 10` in the test file
-2. `config.allowed_retries = 15` in the config file (`lit.cfg.py`)
-3. `-Dtest_retry_attempts=20` in the call to `lit` (see `Makefile`)
+Just run `make` to see how lit is called and `LIT_OPTS` is being used to specify
+a newly introduced `maximum_retries_per_test` setting. This setting, if given is
+then assigned to LIT's `test_retry_attempts` config variable, which internally
+is read to fill a tests `allowed_retries` variable which controls for how often
+a test execution can be repeated.
 
-None of the above trigger a re-run of the test. 
+See [this upstream PR](https://github.com/llvm/llvm-project/pull/141851) to
+introduce the `maximum_retries_per_test` setting to the `openmp` test directory.
 
-## Example output
+### Example run
 
-```console
+```
 $ make
-lit multiple-of-7.py -Dcurrent_second=1748446771 -Dtest_retry_attempts=20 -vv --debug
+LIT_OPTS="-Dmaximum_retries_per_test=4000" lit multiple-of-7.py -vv --debug
 lit: /usr/lib/python3.13/site-packages/lit/discovery.py:66: note: loading suite config '/home/fedora/src/allow-retries/lit.cfg.py'
 lit: /usr/lib/python3.13/site-packages/lit/TestingConfig.py:142: note: ... loaded config '/home/fedora/src/allow-retries/lit.cfg.py'
 lit: /usr/lib/python3.13/site-packages/lit/discovery.py:141: note: resolved input 'multiple-of-7.py' to 'allow-retries'::('multiple-of-7.py',)
 -- Testing: 1 tests, 1 workers --
-FAIL: allow-retries :: multiple-of-7.py (1 of 1)
-******************** TEST 'allow-retries :: multiple-of-7.py' FAILED ********************
-Exit Code: 1
+FLAKYPASS: allow-retries :: multiple-of-7.py (1 of 1)
 
-Command Output (stdout):
---
-# RUN: at line 3
-/usr/bin/python3 "/home/fedora/src/allow-retries/multiple-of-7.py" "1748446771" | FileCheck --color --dump-input=always "/home/fedora/src/allow-retries/multiple-of-7.py"
-# executed command: /usr/bin/python3 /home/fedora/src/allow-retries/multiple-of-7.py 1748446771
-# note: command had no output on stdout or stderr
-# error: command failed with exit status: 1
-# executed command: FileCheck --color --dump-input=always /home/fedora/src/allow-retries/multiple-of-7.py
-# .---command stderr------------
-# | 
-# | Input file: <stdin>
-# | Check file: /home/fedora/src/allow-retries/multiple-of-7.py
-# | 
-# | -dump-input=help explains the following input dump.
-# | 
-# | Input was:
-# | <<<<<<
-# |    1: Running test 
-# |    2: Current second is NOT a multiple of 7: 1748446771 
-# | >>>>>>
-# `-----------------------------
-
---
-
-********************
-********************
-Failed Tests (1):
-  allow-retries :: multiple-of-7.py
-
-
-Testing Time: 0.22s
+Testing Time: 4.68s
 
 Total Discovered Tests: 1
-  Failed: 1 (100.00%)
-make: *** [Makefile:3: all] Error 1
+  Passed With Retry: 1 (100.00%)
 ```
 
-As you can see, lit only ran the test once and NOT multiple times.
-
-## Lit version in use
-
-```console
-$ lit --version
-lit 19.1.7dev
-```
-
-# Open questions
-
-* What am I doing wrong?
-* How can I make lit retry test execution?
-* Is lit not retrying the test because the input to the test hasn't changed?
-  * In fact, there's none in my test. Notice the `# note: command had no output on stdout or stderr`
-    output in the lit execution.
-    * UPDATE: I'm now passing the current second from the command line to the python and no change.
-
+Notice the `FLAYKYPASS:`.
 
 
