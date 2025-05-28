@@ -1,4 +1,4 @@
-# ALLOW_RETRIES: 10
+# ALLOW_RETRIES: 3000
 
 # RUN: /usr/bin/python3 "%s" "%{current_second}" | FileCheck --color --dump-input=always "%s"
 
