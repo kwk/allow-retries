@@ -21,7 +21,7 @@ config.suffixes = [".py"]
 config.test_source_root = os.path.dirname(__file__)
 config.test_exec_root = os.path.dirname(__file__)
 
-config.allowed_retries = 15
 
-config.substitutions.append(("%{current_second}", lit_config.params.get("current_second", "")))
-
+maximum_retries_per_test = lit_config.params.get("maximum_retries_per_test", None)
+if maximum_retries_per_test is not None:
+    config.test_retry_attempts = int(maximum_retries_per_test)
